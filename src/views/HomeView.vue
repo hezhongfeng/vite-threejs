@@ -14,16 +14,21 @@ let controls;
 let renderer;
 let scene;
 
+const mixers = [];
+const clock = new THREE.Clock();
+
 function createCamera() {
   camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 1, 1000);
+  // camera.position.set(-1.5, 1.5, 6.5);
   camera.position.set(-1.5, 101.5, 166.5);
 }
 
 function createControls() {
   controls = new OrbitControls(camera, container);
-  controls.autoRotate = true;
   controls.enableZoom = false;
   controls.enablePan = false;
+  controls.enableDamping = true;
+  controls.target.z = 2;
 }
 
 function createLights() {
@@ -38,6 +43,15 @@ function createLights() {
 function loadModels() {
   const onLoad = (gltf, position) => {
     const bird = gltf.scene.children[0];
+    bird.position.copy(position);
+
+    const animation = gltf.animations[0];
+
+    const mixer = new THREE.AnimationMixer(bird);
+    mixers.push(mixer);
+
+    const action = mixer.clipAction(animation);
+    action.play();
 
     scene.add(bird);
   };
@@ -79,7 +93,13 @@ function createRenderer() {
 }
 
 function update() {
-  controls.update();
+  // controls.update();
+  const delta = clock.getDelta();
+
+  mixers.forEach((mixer) => {
+    mixer.update(delta);
+  });
+  controls.update(delta);
 }
 
 function render() {
