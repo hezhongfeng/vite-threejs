@@ -1,8 +1,15 @@
 <template>
-  <div></div>
+  <div class="home">
+    <div class="container"></div>
+  </div>
 </template>
 
-<script async setup>
+<script setup>
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  init();
+});
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -19,8 +26,7 @@ const clock = new THREE.Clock();
 
 function createCamera() {
   camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 1, 1000);
-  // camera.position.set(-1.5, 1.5, 6.5);
-  camera.position.set(-1.5, 101.5, 166.5);
+  camera.position.set(-100.5, 101.5, 166.5);
 }
 
 function createControls() {
@@ -60,22 +66,6 @@ function loadModels() {
 
   const parrotPosition = new THREE.Vector3(0, 0, 2.5);
   loader.load(Parrot, (gltf) => onLoad(gltf, parrotPosition), null, null);
-
-  // const flamingoPosition = new THREE.Vector3(7.5, 0, -10);
-  // loader.load(
-  //   '/examples/assets/models/Flamingo.glb',
-  //   (gltf) => onLoad(gltf, flamingoPosition),
-  //   null,
-  //   null,
-  // );
-
-  // const storkPosition = new THREE.Vector3(0, -2.5, -10);
-  // loader.load(
-  //   '/examples/assets/models/Stork.glb',
-  //   (gltf) => onLoad(gltf, storkPosition),
-  //   null,
-  //   null,
-  // );
 }
 
 function createRenderer() {
@@ -115,21 +105,34 @@ function onWindowResize() {
   renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
-container = document.body;
+const init = () => {
+  container = document.querySelector('.container');
 
-scene = new THREE.Scene();
-scene.background = new THREE.Color(0x8fbcd4);
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x8fbcd4);
 
-createCamera();
-createControls();
-createLights();
-loadModels();
-createRenderer();
+  createCamera();
+  createControls();
+  createLights();
+  loadModels();
+  createRenderer();
 
-renderer.setAnimationLoop(() => {
-  update();
-  render();
-});
+  renderer.setAnimationLoop(() => {
+    update();
+    render();
+  });
 
-window.addEventListener('resize', onWindowResize);
+  window.addEventListener('resize', onWindowResize);
+};
 </script>
+
+<style>
+.home {
+  height: 100vh;
+  width: 100vw;
+  .container {
+    height: 100%;
+    width: 100%;
+  }
+}
+</style>
